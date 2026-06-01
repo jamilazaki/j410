@@ -78,7 +78,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 16px; /* keeps side padding only */
-    height: 90px; /* controls navbar height */
+    height: 130px; /* controls navbar height */
     
     display: flex;
     justify-content: space-between;
@@ -234,8 +234,8 @@ h1 {
     bottom: 24px;
     right: 24px;
     z-index: 999;
-    background-color: var(--primary-color);
-    color: white;
+    background-color: var(--background-color);
+    color: var(--primary-color);
     border: none;
     padding: 10px 16px;
     font-family: var(--heading-font);
