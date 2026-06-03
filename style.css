@@ -454,8 +454,7 @@ blockquote {
 }
 
 #lyric-btn.playing {
-    display: inline-block;
-    animation: lyric-spin 0.5s linear infinite;
+    display: inline;
 }
 
 #lyric-text {
