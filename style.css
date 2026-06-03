@@ -432,26 +432,37 @@ blockquote {
 }
 
 /* ============================================
-   SOUNDCITE OVERRIDES
+   CUSTOM LYRIC PLAYER
    ============================================ */
 
-.soundcite-play {
-    -webkit-animation-duration: 0.5s !important;
-    animation-duration: 0.5s !important;
-    color: var(--secondary-color) !important;
+@keyframes lyric-spin {
+    from { transform: rotate(0deg); opacity: 0.3; }
+    50%  { transform: rotate(180deg); opacity: 1; }
+    to   { transform: rotate(360deg); opacity: 0.3; }
 }
 
-.soundcite {
-    display: inline !important;
-    background-color: var(--secondary-color) !important;
-    color: var(--background-color) !important;
-    border-bottom: none !important;
-    padding: 2px 4px !important;
-    border-radius: 2px !important;
+#lyric-btn {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 0.85em;
+    padding: 0 4px 0 0;
+    vertical-align: middle;
+    line-height: 1;
+    display: inline;
 }
 
-.soundcite-loaded.soundcite-playing {
-    color: var(--background-color) !important;
+#lyric-btn.playing {
+    display: inline-block;
+    animation: lyric-spin 0.5s linear infinite;
+}
+
+#lyric-text {
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    padding: 2px 4px;
+    border-radius: 2px;
 }
 
 /* ============================================
