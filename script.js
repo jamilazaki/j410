@@ -97,44 +97,51 @@ backToTopBtn.addEventListener('click', function() {
 });
 
 /* ============================================
-   SOUNDCITE LINE-BY-LINE HIGHLIGHT
-   Single overlay div sweeps one line at a time.
-   Pause/resume tracked via MutationObserver on
-   the soundcite-playing class.
+   CUSTOM LYRIC PLAYER
+   Vanilla JS — no CDN, no external libraries.
+   Play button spins while audio plays; single
+   overlay div sweeps the lyric line by line.
    ============================================ */
 
 window.addEventListener('load', function() {
-    var CLIP_DURATION = 11.3;
+    var CLIP_START    = 21;
+    var CLIP_END      = 32.27;
+    var CLIP_DURATION = CLIP_END - CLIP_START;
 
-    var soundciteSpan = document.querySelector('.soundcite');
-    if (!soundciteSpan) return;
+    var btn       = document.getElementById('lyric-btn');
+    var lyricText = document.getElementById('lyric-text');
+    if (!btn || !lyricText) return;
 
-    var rafId         = null;
-    var elapsed       = 0;
-    var lastTimestamp = null;
-    var overlay       = document.createElement('div');
+    var audio     = new Audio('audio/soundcite.mp3');
+    var isPlaying = false;
+    var rafId     = null;
+
+    var overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;background:rgba(0,0,0,0.25);pointer-events:none;z-index:9999;border-radius:2px;display:none;width:0';
     document.body.appendChild(overlay);
 
-    function pause() {
+    function stopPlayer() {
+        isPlaying = false;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-        lastTimestamp = null;
-    }
-
-    function reset() {
-        pause();
-        elapsed = 0;
+        btn.classList.remove('playing');
         overlay.style.display = 'none';
         overlay.style.width   = '0';
     }
 
-    function tick(now) {
-        if (lastTimestamp !== null) elapsed += (now - lastTimestamp) / 1000;
-        lastTimestamp = now;
+    function tick() {
+        var elapsed = audio.currentTime - CLIP_START;
+        if (elapsed < 0) elapsed = 0;
 
-        if (elapsed >= CLIP_DURATION) { reset(); return; }
+        if (elapsed >= CLIP_DURATION || audio.paused) {
+            if (elapsed >= CLIP_DURATION) {
+                audio.pause();
+                audio.currentTime = CLIP_START;
+                stopPlayer();
+            }
+            return;
+        }
 
-        var rects = Array.from(soundciteSpan.getClientRects());
+        var rects = Array.from(lyricText.getClientRects());
         var n     = rects.length;
         if (!n) { rafId = requestAnimationFrame(tick); return; }
 
@@ -152,13 +159,19 @@ window.addEventListener('load', function() {
         rafId = requestAnimationFrame(tick);
     }
 
-    new MutationObserver(function() {
-        if (soundciteSpan.classList.contains('soundcite-playing')) {
-            if (!rafId) rafId = requestAnimationFrame(tick);
+    btn.addEventListener('click', function() {
+        if (isPlaying) {
+            audio.pause();
+            stopPlayer();
         } else {
-            if (elapsed > 0) pause();
-            else reset();
+            if (audio.currentTime < CLIP_START || audio.currentTime >= CLIP_END) {
+                audio.currentTime = CLIP_START;
+            }
+            audio.play();
+            isPlaying = true;
+            btn.classList.add('playing');
+            rafId = requestAnimationFrame(tick);
         }
-    }).observe(soundciteSpan, { attributes: true, attributeFilter: ['class'] });
+    });
 });
 
