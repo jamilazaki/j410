@@ -95,3 +95,70 @@ window.addEventListener('scroll', function() {
 backToTopBtn.addEventListener('click', function() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* ============================================
+   SOUNDCITE LINE-BY-LINE HIGHLIGHT
+   Single overlay div sweeps one line at a time.
+   Pause/resume tracked via MutationObserver on
+   the soundcite-playing class.
+   ============================================ */
+
+window.addEventListener('load', function() {
+    var CLIP_DURATION = 11.3;
+
+    var soundciteSpan = document.querySelector('.soundcite');
+    if (!soundciteSpan) return;
+
+    var rafId         = null;
+    var elapsed       = 0;
+    var lastTimestamp = null;
+    var overlay       = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;background:rgba(0,0,0,0.25);pointer-events:none;z-index:9999;border-radius:2px;display:none;width:0';
+    document.body.appendChild(overlay);
+
+    function pause() {
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        lastTimestamp = null;
+    }
+
+    function reset() {
+        pause();
+        elapsed = 0;
+        overlay.style.display = 'none';
+        overlay.style.width   = '0';
+    }
+
+    function tick(now) {
+        if (lastTimestamp !== null) elapsed += (now - lastTimestamp) / 1000;
+        lastTimestamp = now;
+
+        if (elapsed >= CLIP_DURATION) { reset(); return; }
+
+        var rects = Array.from(soundciteSpan.getClientRects());
+        var n     = rects.length;
+        if (!n) { rafId = requestAnimationFrame(tick); return; }
+
+        var timePerLine = CLIP_DURATION / n;
+        var currentLine = Math.min(n - 1, Math.floor(elapsed / timePerLine));
+        var progress    = (elapsed - currentLine * timePerLine) / timePerLine;
+        var r           = rects[currentLine];
+
+        overlay.style.display = 'block';
+        overlay.style.left    = r.left   + 'px';
+        overlay.style.top     = r.top    + 'px';
+        overlay.style.height  = r.height + 'px';
+        overlay.style.width   = (r.width * progress) + 'px';
+
+        rafId = requestAnimationFrame(tick);
+    }
+
+    new MutationObserver(function() {
+        if (soundciteSpan.classList.contains('soundcite-playing')) {
+            if (!rafId) rafId = requestAnimationFrame(tick);
+        } else {
+            if (elapsed > 0) pause();
+            else reset();
+        }
+    }).observe(soundciteSpan, { attributes: true, attributeFilter: ['class'] });
+});
+
