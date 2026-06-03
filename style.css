@@ -432,6 +432,29 @@ blockquote {
 }
 
 /* ============================================
+   SOUNDCITE OVERRIDES
+   ============================================ */
+
+.soundcite-play {
+    -webkit-animation-duration: 0.5s !important;
+    animation-duration: 0.5s !important;
+    color: var(--secondary-color) !important;
+}
+
+.soundcite {
+    display: inline !important;
+    background-color: var(--secondary-color) !important;
+    color: var(--background-color) !important;
+    border-bottom: none !important;
+    padding: 2px 4px !important;
+    border-radius: 2px !important;
+}
+
+.soundcite-loaded.soundcite-playing {
+    color: var(--background-color) !important;
+}
+
+/* ============================================
    SPOTIFY EMBED
    ============================================ */
 
