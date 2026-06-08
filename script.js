@@ -240,5 +240,3 @@ document.addEventListener('play', e => {
     if (el !== e.target) el.pause();
   });
 }, true);
-
-
